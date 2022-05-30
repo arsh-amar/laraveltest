@@ -95,6 +95,68 @@ class MenuController extends BaseController
      */
 
     public function getMenuItems() {
+
+
+        $menus = MenuItem::whereNull('parent_id')->with('menus')->get();
+
+       
+
+        foreach($menus as $menu){
+            $final_menu[] =  [
+            "id" => $menu->id,
+            "name" => $menu->name,
+            "url" => $menu->url,
+            "parent_id" => $menu->parent_id ,
+            "created_at"=> $menu->created_at,
+            "updated_at"=> $menu->updated_at,
+            "children"=> $this->get_children_menu($menu->childrenMenus)  ];
+        }
+
+        return $object = (object) $final_menu;
+
         throw new \Exception('implement in coding task 3');
     }
+
+        private function get_children_menu($childmenus){
+
+            $final_menu = [];
+            foreach ($childmenus as $menu){
+                $final_menu[] = [
+                    "id" => $menu->id,
+                    "name" => $menu->name,
+                    "url" => $menu->url,
+                    "parent_id" => $menu->parent_id ,
+                    "created_at"=> $menu->created_at,
+                    "updated_at"=> $menu->updated_at,
+                    "children"=> $this->get_children_menu_level_next($menu->childrenMenus) ];
+            }
+
+            return $final_menu;
+            
+        }
+
+        private function get_children_menu_level_next ($childmenus){
+            
+            
+            $final_menu = [];
+
+            if($childmenus){
+            foreach ($childmenus as $menu){
+                $final_menu[] = [
+                    "id" => $menu->id,
+                    "name" => $menu->name,
+                    "url" => $menu->url,
+                    "parent_id" => $menu->parent_id ,
+                    "created_at"=> $menu->created_at,
+                    "updated_at"=> $menu->updated_at,
+                    "children"=> $this->get_children_menu_level_next($menu->childrenMenus) ];
+            
+            }
+            }
+
+            return $final_menu ;
+            
+        }
+
+       
 }
