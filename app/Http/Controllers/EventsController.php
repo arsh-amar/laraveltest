@@ -9,6 +9,8 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Date;
 
+use App\Http\Resources\EventResource;
+
 class EventsController extends BaseController
 {
     public function getWarmupEvents() {
@@ -101,6 +103,23 @@ class EventsController extends BaseController
      */
 
     public function getEventsWithWorkshops() {
+        //solution one
+        //return EventResource::collection($this->getWarmupEvents());
+
+        //solution two
+        $events = array();
+       
+        foreach($this->getWarmupEvents() as $event){
+            $events[] =  ["id" => $event->id,
+            "name"=> $event->name,
+            "created_at"=> $event->created_at,
+            "updated_at"=> $event->updated_at,
+            "workshops"=> $event->workshops->toArray()];
+        }
+
+        return $object = (object) $events;
+
+        
         throw new \Exception('implement in coding task 1');
     }
 
